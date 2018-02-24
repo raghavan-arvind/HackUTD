@@ -27,6 +27,7 @@ class RapIndex:
     def addRhyme(self, word):
         if len(word) == 1 and word not in 'ia':
             return
+
         phones = p.phones_for_word(word)
         if len(phones) != 0:
             phones = phones[0].split(" ")
@@ -49,7 +50,37 @@ class RapIndex:
                 choices.append(key)
         return random.choice(choices)
 
-    #def getRhymes(self):
+    def getRhymingWords(self, num=2):
+        vowels = [key for key in self.rhymeIndex]
+        while len(vowels) > 0:
+            choice = random.choice(vowels)
+            if len(self.rhymeIndex[choice]) < num:
+                vowels.remove(choice)
+            else:
+                words = [word for word in self.rhymeIndex[choice]]
+                returnList = []
+                while len(returnList) < num:
+                    wordChoice = random.choice(words)
+                    returnList.append(wordChoice)
+                    words.remove(wordChoice)
+                return returnList
+        return None
+    
+    def getBars(self, numBars=2):
+        endWords = self.getRhymingWords(num=numBars)
+
+        bars = []
+        for word in endWords:
+           current_line = word
+           current_word = word
+           while current_word != '--':
+               current_word = self.markovNext(current_word)
+               if current_word != '--':
+                   current_line = current_word + " " + current_line
+           bars.append(current_line) 
+        return bars
+
+
         
     def save(self, filename):
         with open(filename, "wb") as f:
@@ -73,10 +104,10 @@ if __name__ == "__main__":
             if line.strip() != "":
                 words = line.split(" ")
                 i = len(words) - 1
+                if i > 0:
+                    index.addRhyme(words[i].strip())
                 while i > 0:
                     index.addMarkov(words[i].strip(), words[i-1].strip())
                     i -= 1
                 index.addMarkov(words[i].strip(), "--")
-            for word in line.strip().split():
-                index.addRhyme(word)
-    print(index.markovIndex)
+    print(index.getBars())
