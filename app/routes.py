@@ -1,6 +1,10 @@
+import sys, os
 from flask import render_template
 from app import app
+from .markov_gen_one import getLyrics
+
 
 @app.route('/')
 def index():
-    return render_template('index.html', title="Home")
+    generated = {'lyrics' : getLyrics()}
+    return render_template('index.html', title="Home",generated=generated)

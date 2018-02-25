@@ -6,6 +6,7 @@ import random
 
 parser = argparse.ArgumentParser()
 parser.add_argument('input_file', type=str, help="The name of the input text")
+input_file = 'raps_all.txt'
 
 LINE_LENGTH = [5, 8]
 
@@ -113,13 +114,11 @@ class RapIndex:
             self.rhymeIndex = dump.rhymeIndex
 
 
-if __name__ == "__main__":
-    args = parser.parse_args()
-    
+def getLyrics():
     index = RapIndex()
 
     #print("Building rap index!")
-    with open(args.input_file, "r") as f:
+    with open(input_file, "r") as f:
         for line in f:
             line = line.replace("\s+", " ")
             if line.strip() != "":
@@ -131,10 +130,13 @@ if __name__ == "__main__":
                     index.addMarkov(words[i].strip(), words[i-1].strip())
                     i -= 1
                 index.addMarkov(words[i].strip(), "--")
-    for i in range(10):
-        for BAR in index.getBars(numBars=4):
-            print(BAR)
-            print(" ")
-            print(" ")
-            print(" ")
-        print(" ")
+    #index.save("index.ind")
+    lyrics = []
+    lyrics.extend(index.getBars(numBars=2))
+    lyrics.extend(index.getBars(numBars=2))
+    lyrics.extend(index.getBars(numBars=2))
+    lyrics.extend(index.getBars(numBars=2))
+    return lyrics
+
+if __name__ == '__main__':
+    getLyrics()
