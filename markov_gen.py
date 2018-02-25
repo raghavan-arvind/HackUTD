@@ -32,13 +32,15 @@ class RapIndex:
         if len(phones) != 0:
             phones = phones[0].split(" ")
             i = len(phones) - 1
+            stub = ""
             while i >= 0:
                 if any(char.isdigit() for char in phones[i]):
-                    if phones[i] in self.rhymeIndex:
-                        self.rhymeIndex[phones[i]].add(word)
+                    if (stub+phones[i]) in self.rhymeIndex:
+                        self.rhymeIndex[stub+phones[i]].add(word)
                     else:
-                        self.rhymeIndex[phones[i]] = set([word])
+                        self.rhymeIndex[stub+phones[i]] = set([word])
                     break
+                stub += phones[i]
                 i -= 1
 
     def markovNext(self, word):
@@ -66,7 +68,7 @@ class RapIndex:
                 return returnList
         return None
     
-    def getBars(self, numBars=2):
+    def getBars(self, numBars=2, exp_length=6):
         endWords = self.getRhymingWords(num=numBars)
 
         bars = []
