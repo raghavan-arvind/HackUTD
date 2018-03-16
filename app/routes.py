@@ -24,10 +24,10 @@ def timeit():
     global curtime
     if config.verbose:
         if curtime == -1:
-            curtime = time.clock()
+            curtime = time.time()
             return -1
         else:
-            time_elapsed = time.clock() - curtime
+            time_elapsed = time.time() - curtime
             curtime = -1
             return time_elapsed
 
@@ -50,8 +50,8 @@ def index():
     # overlay rap onto speech
     debug("Overlaying rap onto instrumental...")
     timeit()
-    sound1 = AudioSegment.from_mp3("app/templates/rap.mp3") + 4
-    sound2 = AudioSegment.from_mp3("app/templates/ultimate.mp3")
+    sound1 = AudioSegment.from_mp3("app/templates/rap.mp3") + 6
+    sound2 = AudioSegment.from_mp3("app/templates/ultimate.mp3") - 1
 
     output = sound2.overlay(sound1,position=18500)
     output.export("app/templates/mixed_sounds.mp3", format="mp3")
