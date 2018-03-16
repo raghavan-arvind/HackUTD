@@ -9,8 +9,10 @@ itsdangerous==0.24
 Jinja2==2.10
 markovify==0.7.1
 MarkupSafe==1.0
+numpy==1.14.2
 pronouncing==0.1.5
 pydub==0.21.0
+remix==2.4.0
 requests==2.18.4
 six==1.11.0
 Unidecode==1.0.22
