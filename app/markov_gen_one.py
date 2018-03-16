@@ -1,12 +1,19 @@
 import markovify
 import pickle
+import os, sys
 import pronouncing as p
-import argparse
+import config
 import random
 
 input_file = 'raps_all.txt'
 
 LINE_LENGTH = [5, 8]
+
+# prints verbose error messages
+def debug(line):
+    if config.verbose: 
+        sys.stdout.write(line)
+        sys.stdout.flush()
 
 class RapIndex:
     def __init__(self):
@@ -113,28 +120,38 @@ class RapIndex:
 
 
 def getLyrics(input_file):
+    # save current directory, switch to this file's directory
+    curdir = os.getcwd()
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
     index = RapIndex()
 
-    #print("Building rap index!")
-    with open(input_file, "r") as f:
-        for line in f:
-            line = line.replace("\s+", " ")
-            if line.strip() != "":
-                words = line.split(" ")
-                i = len(words) - 1
-                if i > 0:
-                    index.addRhyme(words[i].strip())
-                while i > 0:
-                    index.addMarkov(words[i].strip(), words[i-1].strip())
-                    i -= 1
-                index.addMarkov(words[i].strip(), "--")
-    #index.save("index.ind")
+    if os.path.isfile("index_one.ind"):
+        index.load("index_one.ind")
+    else:
+        # Building rap index!
+        with open(input_file, "r") as f:
+            for line in f:
+                line = line.replace("\s+", " ")
+                if line.strip() != "":
+                    words = line.split(" ")
+                    i = len(words) - 1
+                    if i > 0:
+                        index.addRhyme(words[i].strip())
+                    while i > 0:
+                        index.addMarkov(words[i].strip(), words[i-1].strip())
+                        i -= 1
+                    index.addMarkov(words[i].strip(), "--")
+
+        # Saving index
+        index.save("index_one.ind")
     lyrics = []
-    lyrics.extend(index.getBars(numBars=2))
-    lyrics.extend(index.getBars(numBars=2))
-    lyrics.extend(index.getBars(numBars=2))
-    lyrics.extend(index.getBars(numBars=2))
+    for i in range(4):
+        lyrics.extend(index.getBars(numBars=2))
+
+    # reset current directory
+    os.chdir(curdir)
     return lyrics
 
 if __name__ == '__main__':
-    getLyrics(input_file)
+    print(getLyrics(input_file))

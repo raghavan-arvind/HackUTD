@@ -1,7 +1,8 @@
 import markovify
 import pickle
 import pronouncing as p
-import argparse
+import config
+import os, sys
 import random
 
 random.seed(1)
@@ -9,6 +10,12 @@ random.seed(1)
 input_file = "raps_all.txt"
 
 LINE_LENGTH = [6, 9]
+
+# prints verbose error messages
+def debug(line):
+    if config.verbose: 
+        sys.stdout.write(line)
+        sys.stdout.flush()
 
 class RapIndex:
     def __init__(self):
@@ -127,44 +134,30 @@ class RapIndex:
 def getLyrics(input_file):
     index = RapIndex()
 
-    #print("Building rap index!")
-    with open(input_file, "r") as f:
-        for line in f:
-            line = line.replace("\s+", " ")
-            if line.strip() != "":
-                words = line.split(" ")
-                i = len(words) - 1
-                if i > 0:
-                    index.addRhyme(words[i].strip(), words[i-1].strip())
-                while i > 1:
-                    index.addMarkov(words[i].strip(), words[i-1].strip(), words[i-2].strip())
-                    i -= 1
-                index.addMarkov(words[i].strip(), words[i-1].strip(), "--")
+    if os.path.isfile("index_two.ind"):
+        index.load("index_two.ind")
+    else:
+        # Building rap index!
+        with open(input_file, "r") as f:
+            for line in f:
+                line = line.replace("\s+", " ")
+                if line.strip() != "":
+                    words = line.split(" ")
+                    i = len(words) - 1
+                    if i > 0:
+                        index.addRhyme(words[i].strip(), words[i-1].strip())
+                    while i > 1:
+                        index.addMarkov(words[i].strip(), words[i-1].strip(), words[i-2].strip())
+                        i -= 1
+                    index.addMarkov(words[i].strip(), words[i-1].strip(), "--")
 
-    #index.save("index.ind")
+        # Saving index
+        index.save("index_two.ind")
+
     lyrics = []
-    lyrics.extend(index.getBars(numBars=2))
-    lyrics.extend(index.getBars(numBars=2))
-    lyrics.extend(index.getBars(numBars=2))
-    lyrics.extend(index.getBars(numBars=2))
+    for i in range(4):
+        lyrics.extend(index.getBars(numBars=2))
     return lyrics
 
 if __name__ == "__main__":
-    index = RapIndex()
-
-    print("Building rap index!")
-    with open(input_file, "r") as f:
-        for line in f:
-            line = line.replace("\s+", " ")
-            if line.strip() != "":
-                words = line.split(" ")
-                i = len(words) - 1
-                # BUG
-    #print("saving index...")
-    #index.save('index.ind')
-
-
-    print(index.markovIndex)
-    for i in range(2):
-        bars = index.getBars(numBars=2)
-        print(bars[0]+'\n'+bars[1])
+    print(getLyrics(input_file))
