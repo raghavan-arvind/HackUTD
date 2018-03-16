@@ -4,8 +4,6 @@ import pronouncing as p
 import argparse
 import random
 
-parser = argparse.ArgumentParser()
-parser.add_argument('input_file', type=str, help="The name of the input text")
 input_file = 'raps_all.txt'
 
 LINE_LENGTH = [5, 8]
@@ -114,7 +112,7 @@ class RapIndex:
             self.rhymeIndex = dump.rhymeIndex
 
 
-def getLyrics():
+def getLyrics(input_file):
     index = RapIndex()
 
     #print("Building rap index!")
@@ -139,4 +137,4 @@ def getLyrics():
     return lyrics
 
 if __name__ == '__main__':
-    getLyrics()
+    getLyrics(input_file)
