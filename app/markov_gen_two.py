@@ -132,6 +132,10 @@ class RapIndex:
             self.rhymeIndex = dump.rhymeIndex
 
 def getLyrics(input_file):
+    # save current directory, switch to this file's directory
+    curdir = os.getcwd()
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
     index = RapIndex()
 
     if os.path.isfile("index_two.ind"):
@@ -157,6 +161,9 @@ def getLyrics(input_file):
     lyrics = []
     for i in range(4):
         lyrics.extend(index.getBars(numBars=2))
+
+    # reset current directory
+    os.chdir(curdir)
     return lyrics
 
 if __name__ == "__main__":
